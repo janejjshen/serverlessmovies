@@ -1,0 +1,111 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  Table: 
+    Type: String
+    Default: Movies
+  S3Bucket: 
+    Type: String
+  CodeZipKey:
+    Type: String
+    Default: index.js.zip
+Resources:
+  GetMovie:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.read
+      Runtime: nodejs6.10
+      CodeUri:
+        Bucket: !Ref S3Bucket
+        Key: !Ref CodeZipKey
+      Policies:
+       - DynamoDBReadPolicy:
+            TableName: !Ref Table
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DynamoDBTable
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /movies
+            Method: get
+  CreateMovie:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.create
+      Runtime: nodejs6.10
+      CodeUri: 
+        Bucket: !Ref S3Bucket
+        Key: !Ref CodeZipKey
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DynamoDBTable
+      Events:
+        PutResource:
+          Type: Api
+          Properties:
+            Path: /movies
+            Method: post
+  UpdateMovie:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.update
+      Runtime: nodejs6.10
+      CodeUri: 
+        Bucket: !Ref S3Bucket
+        Key: !Ref CodeZipKey
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DynamoDBTable
+      Events:
+        DeleteResource:
+          Type: Api
+          Properties:
+            Path: /movies
+            Method: put
+  DeleteMovie:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.delete
+      Runtime: nodejs6.10
+      CodeUri: 
+        Bucket: !Ref S3Bucket
+        Key: !Ref CodeZipKey
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DynamoDBTable
+      Events:
+        DeleteResource:
+          Type: Api
+          Properties:
+            Path: /movies
+            Method: delete  
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      AttributeDefinitions: 
+        - AttributeName: title
+          AttributeType: S
+        - AttributeName: year
+          AttributeType: N
+      KeySchema: 
+        - AttributeName: title
+          KeyType: HASH
+        - AttributeName: year
+          KeyType: RANGE
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName: !Ref Table
+  

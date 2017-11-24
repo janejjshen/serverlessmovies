@@ -1,0 +1,12 @@
+{
+  "name": "serverless-movies-api",
+  "description": "Provides simple CRUD API operations on a movies table.",
+  "version": "0.0.1",
+  "dependencies": {
+    "fs": "latest",
+    "aws-sdk": "latest"
+  },
+  "main": "index.js",
+  "author": "janeshen@amazon.com",
+  "license": "MIT"
+}
